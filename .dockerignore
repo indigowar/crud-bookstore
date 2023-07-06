@@ -1,0 +1,6 @@
+.idea/
+.vscode/
+.git/
+.gitignore
+
+bin/
