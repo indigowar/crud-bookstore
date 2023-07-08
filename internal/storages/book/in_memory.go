@@ -1,8 +1,8 @@
 package book
 
 import (
-	"bookstore/internal/models"
-	"bookstore/internal/services"
+	"bookstore/internal/domain/models"
+	"bookstore/internal/domain/services"
 	"context"
 )
 

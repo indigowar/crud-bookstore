@@ -1,7 +1,7 @@
 package services
 
 import (
-	"bookstore/internal/models"
+	"bookstore/internal/domain/models"
 	"context"
 	"errors"
 	"fmt"

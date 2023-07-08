@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bookstore/internal/delivery/http/handlers"
-	"bookstore/internal/services"
-	inmem "bookstore/internal/storages/in_memory/book"
+	"bookstore/internal/delivery/handlers"
+	"bookstore/internal/domain/services"
+	storage "bookstore/internal/storages/book"
 	"context"
 	"log"
 	"net/http"
@@ -20,9 +20,11 @@ import (
 func main() {
 	logger := slog.Default()
 
-	storage := inmem.NewInMemoryBookStorage()
+	storage := storage.NewInMemoryBookStorage()
 
 	bookSvc := services.NewBookService(logger, storage)
+
+	bookEndpoint := handlers.NewBookEndpoint(bookSvc)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -32,11 +34,11 @@ func main() {
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	r.Route("/books", func(r chi.Router) {
-		r.Get("/", handlers.MakeGetAllBooksHandler(bookSvc))
-		r.Get("/{id}", handlers.MakeGetSpecificBookHandler(bookSvc))
-		r.Post("/", handlers.MakeCreateBookHandler(bookSvc))
-		r.Delete("/{id}", handlers.MakeDeleteBookHandler(bookSvc))
-		r.Put("/", handlers.MakeUpdateBookHandler(bookSvc))
+		r.Get("/", bookEndpoint.GetAllBooks)
+		r.Get("/{id}", bookEndpoint.GetSpecificBook)
+		r.Post("/", bookEndpoint.CreateBook)
+		r.Delete("/{id}", bookEndpoint.DeleteBook)
+		r.Put("/{id}", bookEndpoint.UpdateBook)
 	})
 
 	server := &http.Server{
